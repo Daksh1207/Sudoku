@@ -16,6 +16,8 @@ type GameUi struct {
 	keys           []ebiten.Key
 	paused         bool
 	lastPauseEvent time.Time
+	difficulty     int
+	tick           int
 }
 
 func NewGame(settings core.Settings) GameUi {
@@ -26,8 +28,10 @@ func NewGame(settings core.Settings) GameUi {
 			settings.Height-settings.SquareSize*3-settings.TopBarHeight,
 			settings.SquareSize,
 		),
-		keys:   []ebiten.Key{},
-		paused: false,
+		keys:       []ebiten.Key{},
+		paused:     false,
+		difficulty: 2,
+		tick:       0,
 	}
 }
 
@@ -57,7 +61,12 @@ func (g *GameUi) Update() error {
 		return nil
 	}
 
-	g.game.Update(direction)
+	if g.tick == g.difficulty {
+		g.tick = 0
+		g.game.Update(direction)
+	}
+
+	g.tick += 1
 
 	return nil
 }

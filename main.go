@@ -14,6 +14,7 @@ func main() {
 
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Snake")
+	ebiten.SetMaxTPS(180)
 
 	if err := ebiten.RunGame(&game); err != nil {
 		log.Fatal(err)
