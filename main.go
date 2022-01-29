@@ -16,7 +16,8 @@ type Game struct {
 	snake     game.Snake
 	food      game.Point
 	keys      []ebiten.Key
-	direction string
+	direction string // TODO use enum
+	paused    bool
 }
 
 func (g *Game) Update() error {
@@ -32,11 +33,20 @@ func (g *Game) Update() error {
 			g.direction = "U"
 		case ebiten.KeyArrowDown:
 			g.direction = "D"
+		case ebiten.KeySpace:
+			g.paused = !g.paused
 		}
+	}
+
+	// TODO one key press is detected multiples times
+	// TODO can change snake direction during game paused
+	if g.paused {
+		return nil
 	}
 
 	g.snake.Move(g.direction)
 
+	// TODO improve collision system
 	snakeHead := g.snake.Head()
 	xDiff := float64(snakeHead.X - g.food.X)
 	yDiff := float64(snakeHead.Y - g.food.Y)
@@ -44,6 +54,7 @@ func (g *Game) Update() error {
 
 	if dist < 5 {
 		g.snake.Grow()
+		// TODO create food object
 		g.food.X = rand.Intn(320)
 		g.food.Y = rand.Intn(240)
 	}
@@ -61,6 +72,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			color.RGBA{R: 255, G: 255, B: 255, A: 255},
 		)
 	}
+
 	ebitenutil.DrawRect(
 		screen,
 		float64(g.food.X),
@@ -69,6 +81,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		10,
 		color.RGBA{R: 255, G: 0, B: 0, A: 255},
 	)
+
+	if g.paused {
+		ebitenutil.DebugPrintAt(screen, "Game paused", 50, 50)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -83,6 +99,7 @@ func main() {
 		food:      game.Point{X: 50, Y: 50},
 		keys:      []ebiten.Key{},
 		direction: "R",
+		paused:    false,
 	}
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Snake")
