@@ -3,6 +3,8 @@ package main
 import (
 	"image/color"
 	"log"
+	"math"
+	"math/rand"
 	"snake/game"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -35,20 +37,20 @@ func (g *Game) Update() error {
 
 	g.snake.Move(g.direction)
 
-	dist := g.snake.X[0].X - g.food.X + g.snake.X[0].Y - g.food.Y - 5 - 5
-	if dist < 0 {
-		dist = -dist
-	}
+	snakeHead := g.snake.Head()
+	xDiff := float64(snakeHead.X - g.food.X)
+	yDiff := float64(snakeHead.Y - g.food.Y)
+	dist := math.Sqrt(xDiff*xDiff + yDiff*yDiff)
 
 	if dist < 5 {
 		g.snake.Grow()
-		//g.food.X += 100
+		g.food.X = rand.Intn(320)
+		g.food.Y = rand.Intn(240)
 	}
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	println(len(g.snake.X))
 	for _, sp := range g.snake.X {
 		ebitenutil.DrawRect(
 			screen,

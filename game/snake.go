@@ -20,27 +20,38 @@ func (s *Snake) IsIn(p Point) bool {
 }
 
 func (s *Snake) Grow() {
-	s.X = append(s.X, s.X[len(s.X)-1])
+	// TODO remove loop and draw squares far away
+	for i := 0; i < 5; i++ {
+		s.X = append(s.X, s.X[len(s.X)-1])
+	}
+}
+
+func (s *Snake) Head() Point {
+	return s.X[len(s.X)-1]
+}
+
+func (s *Snake) Tail() Point {
+	return s.X[0]
 }
 
 func (s *Snake) Move(direction string) {
-	last := s.X[len(s.X)-1]
-	first := s.X[0]
+	head := s.Head()
+	tail := s.Tail()
 
 	switch direction {
 	case "R":
-		first.X = last.X + 1
-		first.Y = last.Y
+		tail.X = head.X + 1
+		tail.Y = head.Y
 	case "L":
-		first.X = last.X - 1
-		first.Y = last.Y
+		tail.X = head.X - 1
+		tail.Y = head.Y
 	case "U":
-		first.X = last.X
-		first.Y = last.Y - 1
+		tail.X = head.X
+		tail.Y = head.Y - 1
 	case "D":
-		first.X = last.X
-		first.Y = last.Y + 1
+		tail.X = head.X
+		tail.Y = head.Y + 1
 	}
 
-	s.X = append(s.X[1:], first)
+	s.X = append(s.X[1:], tail)
 }
