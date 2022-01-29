@@ -7,7 +7,7 @@ type Snake struct {
 
 func NewSnake() Snake {
 	return Snake{
-		X:         []Point{{X: 0, Y: 0}},
+		X:         []Point{{X: 160, Y: 120}},
 		direction: DIRECTION_NONE,
 	}
 }

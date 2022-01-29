@@ -4,7 +4,6 @@ import (
 	"image/color"
 	"log"
 	"math"
-	"math/rand"
 	"snake/game"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -14,7 +13,7 @@ import (
 
 type Game struct {
 	snake  game.Snake
-	food   game.Point
+	food   game.Food
 	keys   []ebiten.Key
 	paused bool
 }
@@ -48,15 +47,13 @@ func (g *Game) Update() error {
 
 	// TODO improve collision system
 	snakeHead := g.snake.Head()
-	xDiff := float64(snakeHead.X - g.food.X)
-	yDiff := float64(snakeHead.Y - g.food.Y)
+	xDiff := float64(snakeHead.X - g.food.X.X)
+	yDiff := float64(snakeHead.Y - g.food.X.Y)
 	dist := math.Sqrt(xDiff*xDiff + yDiff*yDiff)
 
 	if dist < 5 {
 		g.snake.Grow()
-		// TODO create food object
-		g.food.X = rand.Intn(320)
-		g.food.Y = rand.Intn(240)
+		g.food = game.NewFoodAtRandom()
 	}
 	return nil
 }
@@ -75,8 +72,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	ebitenutil.DrawRect(
 		screen,
-		float64(g.food.X),
-		float64(g.food.Y),
+		float64(g.food.X.X),
+		float64(g.food.X.Y),
 		10,
 		10,
 		color.RGBA{R: 255, G: 0, B: 0, A: 255},
@@ -94,7 +91,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 func main() {
 	snakeGame := Game{
 		snake:  game.NewSnake(),
-		food:   game.Point{X: 50, Y: 50},
+		food:   game.NewFoodAtRandom(),
 		keys:   []ebiten.Key{},
 		paused: false,
 	}
