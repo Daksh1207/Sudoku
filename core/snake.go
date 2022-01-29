@@ -5,9 +5,9 @@ type Snake struct {
 	direction Direction
 }
 
-func NewSnake() Snake {
+func NewSnake(x int, y int) Snake {
 	return Snake{
-		X:         []Point{{X: 160, Y: 120}},
+		X:         []Point{{X: x, Y: y}},
 		direction: DIRECTION_NONE,
 	}
 }

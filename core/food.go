@@ -6,11 +6,11 @@ type Food struct {
 	X Point
 }
 
-func NewFoodAtRandom() Food {
+func NewFoodAtRandom(xMax int, yMax int) Food {
 	return Food{
 		X: Point{
-			X: rand.Intn(320),
-			Y: rand.Intn(240),
+			X: rand.Intn(xMax),
+			Y: rand.Intn(yMax),
 		},
 	}
 }

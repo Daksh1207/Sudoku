@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"math"
+	"fmt"
 	"snake/core"
 	"time"
 
@@ -10,28 +10,30 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-type Game struct {
+type GameUi struct {
 	settings       core.Settings
-	snake          core.Snake
-	food           core.Food
+	game           core.Game
 	keys           []ebiten.Key
 	paused         bool
 	lastPauseEvent time.Time
 }
 
-func NewGame() Game {
-	return Game{
-		settings: core.NewSettings(),
-		snake:    core.NewSnake(),
-		food:     core.NewFoodAtRandom(),
-		keys:     []ebiten.Key{},
-		paused:   false,
+func NewGame(settings core.Settings) GameUi {
+	return GameUi{
+		settings: settings,
+		game: core.NewGame(
+			settings.Width-settings.SquareSize*3,
+			settings.Height-settings.SquareSize*3-settings.TopBarHeight,
+			settings.SquareSize,
+		),
+		keys:   []ebiten.Key{},
+		paused: false,
 	}
 }
 
-func (g *Game) Update() error {
+func (g *GameUi) Update() error {
 	g.keys = inpututil.AppendPressedKeys(g.keys[:0])
-	direction := g.snake.GetDirection()
+	direction := g.game.Snake.GetDirection()
 
 	if len(g.keys) == 1 {
 		switch g.keys[0] {
@@ -55,48 +57,79 @@ func (g *Game) Update() error {
 		return nil
 	}
 
-	g.snake.SetDirection(direction)
-	g.snake.Move()
+	g.game.Update(direction)
 
-	snakeHead := g.snake.Head()
-	radius := g.settings.SquareSize / 2.0
-	xDiff := float64(snakeHead.X + radius - (g.food.X.X + radius))
-	yDiff := float64(snakeHead.Y + radius - (g.food.X.Y + radius))
-	dist := math.Sqrt(xDiff*xDiff + yDiff*yDiff)
-
-	if dist < float64(g.settings.SquareSize) {
-		g.snake.Grow()
-		g.food = core.NewFoodAtRandom()
-	}
 	return nil
 }
 
-func (g *Game) Draw(screen *ebiten.Image) {
-	for _, sp := range g.snake.X {
+func (g *GameUi) Draw(screen *ebiten.Image) {
+	// Borders
+	ebitenutil.DrawRect(
+		screen,
+		0,
+		float64(g.settings.TopBarHeight),
+		float64(g.settings.Width),
+		float64(g.settings.SquareSize),
+		g.settings.SnakeColor,
+	)
+	ebitenutil.DrawRect(
+		screen,
+		0,
+		float64(g.settings.Height-g.settings.SquareSize),
+		float64(g.settings.Width),
+		float64(g.settings.SquareSize),
+		g.settings.SnakeColor,
+	)
+	ebitenutil.DrawRect(
+		screen,
+		0,
+		float64(g.settings.TopBarHeight),
+		float64(g.settings.SquareSize),
+		float64(g.settings.Height),
+		g.settings.SnakeColor,
+	)
+	ebitenutil.DrawRect(
+		screen,
+		float64(g.settings.Width-g.settings.SquareSize),
+		float64(g.settings.TopBarHeight),
+		float64(g.settings.SquareSize),
+		float64(g.settings.Height),
+		g.settings.SnakeColor,
+	)
+
+	// Snake
+	xOffset := g.settings.SquareSize
+	yOffset := g.settings.SquareSize + g.settings.TopBarHeight
+
+	for _, sp := range g.game.Snake.X {
 		ebitenutil.DrawRect(
 			screen,
-			float64(sp.X),
-			float64(sp.Y),
+			float64(sp.X+xOffset),
+			float64(sp.Y+yOffset),
 			float64(g.settings.SquareSize),
 			float64(g.settings.SquareSize),
 			g.settings.SnakeColor,
 		)
 	}
 
+	// Food
 	ebitenutil.DrawRect(
 		screen,
-		float64(g.food.X.X),
-		float64(g.food.X.Y),
+		float64(g.game.Food.X.X+xOffset),
+		float64(g.game.Food.X.Y+yOffset),
 		float64(g.settings.SquareSize),
 		float64(g.settings.SquareSize),
 		g.settings.FoodColor,
 	)
 
+	// Menu
 	if g.paused {
-		ebitenutil.DebugPrintAt(screen, "Game paused", 50, 50)
+		ebitenutil.DebugPrintAt(screen, "Game paused", 120, 5)
 	}
+
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Points %d", g.game.Points), 10, 5)
 }
 
-func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 240
+func (g *GameUi) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	return g.settings.Width, g.settings.Height
 }
