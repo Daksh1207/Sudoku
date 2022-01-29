@@ -11,7 +11,8 @@ import (
 )
 
 type Game struct {
-	Snake     game.Snake
+	snake     game.Snake
+	food      game.Point
 	keys      []ebiten.Key
 	direction string
 }
@@ -32,19 +33,39 @@ func (g *Game) Update() error {
 		}
 	}
 
-	g.Snake.Move(g.direction)
+	g.snake.Move(g.direction)
 
+	dist := g.snake.X[0].X - g.food.X + g.snake.X[0].Y - g.food.Y - 5 - 5
+	if dist < 0 {
+		dist = -dist
+	}
+
+	if dist < 5 {
+		g.snake.Grow()
+		//g.food.X += 100
+	}
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	println(len(g.snake.X))
+	for _, sp := range g.snake.X {
+		ebitenutil.DrawRect(
+			screen,
+			float64(sp.X),
+			float64(sp.Y),
+			10,
+			10,
+			color.RGBA{R: 255, G: 255, B: 255, A: 255},
+		)
+	}
 	ebitenutil.DrawRect(
 		screen,
-		float64(g.Snake.X[0].X),
-		float64(g.Snake.X[0].Y),
+		float64(g.food.X),
+		float64(g.food.Y),
 		10,
 		10,
-		color.RGBA{R: 255, G: 255, B: 255, A: 255},
+		color.RGBA{R: 255, G: 0, B: 0, A: 255},
 	)
 }
 
@@ -54,14 +75,15 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func main() {
 	snakeGame := Game{
-		Snake: game.Snake{
+		snake: game.Snake{
 			X: []game.Point{{X: 0, Y: 0}},
 		},
+		food:      game.Point{X: 50, Y: 50},
 		keys:      []ebiten.Key{},
 		direction: "R",
 	}
 	ebiten.SetWindowSize(640, 480)
-	ebiten.SetWindowTitle("Hello, World!")
+	ebiten.SetWindowTitle("Snake")
 
 	if err := ebiten.RunGame(&snakeGame); err != nil {
 		log.Fatal(err)

@@ -24,15 +24,23 @@ func (s *Snake) Grow() {
 }
 
 func (s *Snake) Move(direction string) {
+	last := s.X[len(s.X)-1]
+	first := s.X[0]
+
 	switch direction {
 	case "R":
-		s.X[0].X += 1
+		first.X = last.X + 1
+		first.Y = last.Y
 	case "L":
-		s.X[0].X -= 1
+		first.X = last.X - 1
+		first.Y = last.Y
 	case "U":
-		s.X[0].Y -= 1
+		first.X = last.X
+		first.Y = last.Y - 1
 	case "D":
-		s.X[0].Y += 1
+		first.X = last.X
+		first.Y = last.Y + 1
 	}
 
+	s.X = append(s.X[1:], first)
 }
