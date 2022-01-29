@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"snake/game"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -12,10 +13,11 @@ import (
 )
 
 type Game struct {
-	snake  game.Snake
-	food   game.Food
-	keys   []ebiten.Key
-	paused bool
+	snake          game.Snake
+	food           game.Food
+	keys           []ebiten.Key
+	paused         bool
+	lastPauseEvent time.Time
 }
 
 func (g *Game) Update() error {
@@ -33,11 +35,13 @@ func (g *Game) Update() error {
 		case ebiten.KeyArrowDown:
 			direction = game.DIRECTION_DOWN
 		case ebiten.KeySpace:
-			g.paused = !g.paused
+			if time.Since(g.lastPauseEvent).Milliseconds() > 500 {
+				g.lastPauseEvent = time.Now()
+				g.paused = !g.paused
+			}
 		}
 	}
 
-	// TODO one key press is detected multiples times
 	if g.paused {
 		return nil
 	}
