@@ -13,38 +13,38 @@ import (
 )
 
 type Game struct {
-	snake     game.Snake
-	food      game.Point
-	keys      []ebiten.Key
-	direction string // TODO use enum
-	paused    bool
+	snake  game.Snake
+	food   game.Point
+	keys   []ebiten.Key
+	paused bool
 }
 
 func (g *Game) Update() error {
 	g.keys = inpututil.AppendPressedKeys(g.keys[:0])
+	direction := g.snake.GetDirection()
 
 	if len(g.keys) == 1 {
 		switch g.keys[0] {
 		case ebiten.KeyArrowRight:
-			g.direction = "R"
+			direction = game.DIRECTION_RIGHT
 		case ebiten.KeyArrowLeft:
-			g.direction = "L"
+			direction = game.DIRECTION_LEFT
 		case ebiten.KeyArrowUp:
-			g.direction = "U"
+			direction = game.DIRECTION_UP
 		case ebiten.KeyArrowDown:
-			g.direction = "D"
+			direction = game.DIRECTION_DOWN
 		case ebiten.KeySpace:
 			g.paused = !g.paused
 		}
 	}
 
 	// TODO one key press is detected multiples times
-	// TODO can change snake direction during game paused
 	if g.paused {
 		return nil
 	}
 
-	g.snake.Move(g.direction)
+	g.snake.SetDirection(direction)
+	g.snake.Move()
 
 	// TODO improve collision system
 	snakeHead := g.snake.Head()
@@ -93,13 +93,10 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func main() {
 	snakeGame := Game{
-		snake: game.Snake{
-			X: []game.Point{{X: 0, Y: 0}},
-		},
-		food:      game.Point{X: 50, Y: 50},
-		keys:      []ebiten.Key{},
-		direction: "R",
-		paused:    false,
+		snake:  game.NewSnake(),
+		food:   game.Point{X: 50, Y: 50},
+		keys:   []ebiten.Key{},
+		paused: false,
 	}
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Snake")

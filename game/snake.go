@@ -1,12 +1,15 @@
 package game
 
-type Point struct {
-	X int
-	Y int
+type Snake struct {
+	X         []Point
+	direction Direction
 }
 
-type Snake struct {
-	X []Point
+func NewSnake() Snake {
+	return Snake{
+		X:         []Point{{X: 0, Y: 0}},
+		direction: DIRECTION_NONE,
+	}
 }
 
 func (s *Snake) Grow() {
@@ -24,21 +27,40 @@ func (s *Snake) Tail() Point {
 	return s.X[0]
 }
 
-func (s *Snake) Move(direction string) {
+func (s *Snake) canChangeDirection(direction Direction) bool {
+	diff := s.direction - direction
+	if diff < 0 {
+		diff = -diff
+	}
+
+	return diff != 1
+}
+
+func (s *Snake) SetDirection(direction Direction) {
+	if s.canChangeDirection(direction) {
+		s.direction = direction
+	}
+}
+
+func (s *Snake) GetDirection() Direction {
+	return s.direction
+}
+
+func (s *Snake) Move() {
 	head := s.Head()
 	tail := s.Tail()
 
-	switch direction {
-	case "R":
+	switch s.direction {
+	case DIRECTION_RIGHT:
 		tail.X = head.X + 1
 		tail.Y = head.Y
-	case "L":
+	case DIRECTION_LEFT:
 		tail.X = head.X - 1
 		tail.Y = head.Y
-	case "U":
+	case DIRECTION_UP:
 		tail.X = head.X
 		tail.Y = head.Y - 1
-	case "D":
+	case DIRECTION_DOWN:
 		tail.X = head.X
 		tail.Y = head.Y + 1
 	}
