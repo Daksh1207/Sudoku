@@ -2,7 +2,7 @@
 
 Multiplatform 2D snake game written in Go.
 
-Play it at -> soon :D
+Play it at https://snake.pirobits.com/
 
 ## Lore
 
