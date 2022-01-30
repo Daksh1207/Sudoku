@@ -24,14 +24,31 @@ func NewGame(width int, height int, radius int) Game {
 	}
 }
 
-func (g *Game) Update() bool {
+func (g *Game) checkBorderCollision() bool {
 	snakePos := g.Snake.Head()
+	return snakePos.X == 0 || snakePos.X == g.Width || snakePos.Y == 0 || snakePos.Y == g.Height
+}
 
-	if snakePos.X == 0 || snakePos.X == g.Width || snakePos.Y == 0 || snakePos.Y == g.Height {
+func (g *Game) checkSnakeSelfCollision() bool {
+	head := g.Snake.Head()
+	count := 0
+
+	for _, sp := range g.Snake.X {
+		// TODO add radius to collision detection
+		if sp.X == head.X && sp.Y == head.Y {
+			count += 1
+		}
+	}
+
+	return count == 2
+}
+
+func (g *Game) Update() bool {
+
+	if g.checkBorderCollision() || g.checkSnakeSelfCollision() {
 		return false
 	}
 
-	// TODO check self collision
 	g.Snake.Move()
 
 	snakeHead := g.Snake.Head()
