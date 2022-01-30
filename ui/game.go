@@ -53,7 +53,6 @@ func (g *GameUi) restart() {
 	g.newKeys = g.newKeys[:0]
 	g.status = true
 	g.tick = 0
-	fmt.Println(g.game.Snake.GetDirection())
 }
 
 func (g *GameUi) readLastKey() ebiten.Key {
