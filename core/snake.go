@@ -14,7 +14,8 @@ func NewSnake(x int, y int) Snake {
 
 func (s *Snake) Grow() {
 	for i := 0; i < 5; i++ {
-		s.X = append(s.X, s.X[len(s.X)-1])
+		// TODO redesign snake data model to reduce allocations
+		s.X = append([]Point{s.X[len(s.X)-1]}, s.X...)
 	}
 }
 

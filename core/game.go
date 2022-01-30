@@ -43,6 +43,17 @@ func (g *Game) checkSnakeSelfCollision() bool {
 	return count == 2
 }
 
+func (g *Game) checkFoodCollision() bool {
+	snakeHead := g.Snake.Head()
+
+	radius := g.Radius / 2.0
+	xDiff := float64(snakeHead.X + radius - (g.Food.X.X + radius))
+	yDiff := float64(snakeHead.Y + radius - (g.Food.X.Y + radius))
+	dist := math.Sqrt(xDiff*xDiff + yDiff*yDiff)
+
+	return dist < float64(g.Radius)
+}
+
 func (g *Game) Update() bool {
 
 	if g.checkBorderCollision() || g.checkSnakeSelfCollision() {
@@ -51,14 +62,7 @@ func (g *Game) Update() bool {
 
 	g.Snake.Move()
 
-	snakeHead := g.Snake.Head()
-
-	radius := g.Radius / 2.0
-	xDiff := float64(snakeHead.X + radius - (g.Food.X.X + radius))
-	yDiff := float64(snakeHead.Y + radius - (g.Food.X.Y + radius))
-	dist := math.Sqrt(xDiff*xDiff + yDiff*yDiff)
-
-	if dist < float64(g.Radius) {
+	if g.checkFoodCollision() {
 		g.Snake.Grow()
 		g.Food = NewFoodAtRandom(g.Width, g.Height)
 		g.Points += 1
