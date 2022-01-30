@@ -1,12 +1,18 @@
-# snake
+# 🐍 snake 🐍
 
-I love the snake game since I'm a child. Nowadays I can't find one that I really like, so I've decided to program my own.
+Multiplatform 2D snake game written in Go.
 
-I've chosen Go because I love the language and I want to practice it. It uses the [ebiten 2D game engine](https://github.com/hajimehoshi/ebiten).
+Play it at -> soon :D
 
-# Dev
+## Lore
 
-Tis game is still a WIP, so the only way to run it is for developers:
+I've loved the snake game since I was a child. Nowadays I can't find one that I really like, so I've decided to program my own game.
+
+I've chosen Go because I like the language and I want to practice it. It uses the [ebiten 2D game engine](https://github.com/hajimehoshi/ebiten).
+
+## Dev
+
+Install the project requiered packages and run the main file:
 
 ```
 go run main.go
