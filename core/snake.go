@@ -1,14 +1,15 @@
 package core
 
 type Snake struct {
-	X         []Point
-	direction Direction
+	X                []Point
+	direction        Direction
+	desiredDirection Direction
 }
 
 func NewSnake(x int, y int) Snake {
 	return Snake{
 		X:         []Point{{X: x, Y: y}},
-		direction: DIRECTION_NONE,
+		direction: DIRECTION_RIGHT,
 	}
 }
 
@@ -38,7 +39,7 @@ func (s *Snake) canChangeDirection(direction Direction) bool {
 
 func (s *Snake) SetDirection(direction Direction) {
 	if direction != DIRECTION_NONE && s.canChangeDirection(direction) {
-		s.direction = direction
+		s.desiredDirection = direction
 	}
 }
 
@@ -49,6 +50,11 @@ func (s *Snake) GetDirection() Direction {
 func (s *Snake) Move() {
 	head := s.Head()
 	tail := s.Tail()
+
+	if ((s.desiredDirection == DIRECTION_UP || s.desiredDirection == DIRECTION_DOWN) && head.X%10 == 0) ||
+		((s.desiredDirection == DIRECTION_LEFT || s.desiredDirection == DIRECTION_RIGHT) && head.Y%10 == 0) {
+		s.direction = s.desiredDirection
+	}
 
 	switch s.direction {
 	case DIRECTION_RIGHT:

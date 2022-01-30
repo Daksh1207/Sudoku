@@ -13,20 +13,20 @@ type Game struct {
 	Radius int
 }
 
-func NewGame(width int, height int, radius int) Game {
+func NewGame(width int, height int) Game {
 	return Game{
 		Width:  width,
 		Height: height,
 		Snake:  NewSnake(width/2, height/2),
 		Food:   NewFoodAtRandom(width, height),
 		Points: 0,
-		Radius: radius,
+		Radius: SQUARE_SIZE,
 	}
 }
 
 func (g *Game) checkBorderCollision() bool {
 	snakePos := g.Snake.Head()
-	return snakePos.X == 0 || snakePos.X == g.Width || snakePos.Y == 0 || snakePos.Y == g.Height
+	return snakePos.X == -1 || snakePos.X == g.Width+1 || snakePos.Y == -1 || snakePos.Y == g.Height+1
 }
 
 func (g *Game) checkSnakeSelfCollision() bool {

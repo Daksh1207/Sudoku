@@ -26,9 +26,8 @@ func NewGame(settings core.Settings) GameUi {
 	return GameUi{
 		settings: settings,
 		game: core.NewGame(
-			settings.Width-settings.SquareSize*3,
-			settings.Height-settings.SquareSize*3-settings.TopBarHeight,
-			settings.SquareSize,
+			settings.Width-core.SQUARE_SIZE*3,
+			settings.Height-core.SQUARE_SIZE*3-core.TOP_BAR_HEIGHT,
 		),
 		keys:       []ebiten.Key{},
 		newKeys:    []ebiten.Key{},
@@ -45,9 +44,8 @@ func (g *GameUi) pause() {
 
 func (g *GameUi) restart() {
 	g.game = core.NewGame(
-		g.settings.Width-g.settings.SquareSize*3,
-		g.settings.Height-g.settings.SquareSize*3-g.settings.TopBarHeight,
-		g.settings.SquareSize,
+		g.settings.Width-core.SQUARE_SIZE*3,
+		g.settings.Height-core.SQUARE_SIZE*3-core.TOP_BAR_HEIGHT,
 	)
 	g.keys = g.keys[:0]
 	g.newKeys = g.newKeys[:0]
@@ -136,15 +134,15 @@ func (g *GameUi) Update() error {
 }
 
 func (g *GameUi) Draw(screen *ebiten.Image) {
-	xOffset := g.settings.SquareSize
-	yOffset := g.settings.SquareSize + g.settings.TopBarHeight
+	xOffset := core.SQUARE_SIZE
+	yOffset := core.SQUARE_SIZE + core.TOP_BAR_HEIGHT
 
 	g.drawBorder(screen)
 	g.drawSnake(screen, xOffset, yOffset)
 	g.drawFood(screen, xOffset, yOffset)
 
 	if g.paused {
-		ebitenutil.DebugPrintAt(screen, "Game paused", 120, 5)
+		ebitenutil.DebugPrintAt(screen, "Game paused", 120, 2)
 	}
 
 	if !g.status {
@@ -152,7 +150,7 @@ func (g *GameUi) Draw(screen *ebiten.Image) {
 		ebitenutil.DebugPrintAt(screen, "Press space to restart", (g.settings.Width/2)-60, (g.settings.Height/2)+20)
 	}
 
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Points %d", g.game.Points), 10, 5)
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Points %d", g.game.Points), 10, 2)
 }
 
 func (g *GameUi) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -163,32 +161,32 @@ func (g *GameUi) drawBorder(screen *ebiten.Image) {
 	ebitenutil.DrawRect(
 		screen,
 		0,
-		float64(g.settings.TopBarHeight),
+		float64(core.TOP_BAR_HEIGHT),
 		float64(g.settings.Width),
-		float64(g.settings.SquareSize),
+		float64(core.SQUARE_SIZE),
 		g.settings.SnakeColor,
 	)
 	ebitenutil.DrawRect(
 		screen,
 		0,
-		float64(g.settings.Height-g.settings.SquareSize),
+		float64(g.settings.Height-core.SQUARE_SIZE),
 		float64(g.settings.Width),
-		float64(g.settings.SquareSize),
+		float64(core.SQUARE_SIZE),
 		g.settings.SnakeColor,
 	)
 	ebitenutil.DrawRect(
 		screen,
 		0,
-		float64(g.settings.TopBarHeight),
-		float64(g.settings.SquareSize),
+		float64(core.TOP_BAR_HEIGHT),
+		float64(core.SQUARE_SIZE),
 		float64(g.settings.Height),
 		g.settings.SnakeColor,
 	)
 	ebitenutil.DrawRect(
 		screen,
-		float64(g.settings.Width-g.settings.SquareSize),
-		float64(g.settings.TopBarHeight),
-		float64(g.settings.SquareSize),
+		float64(g.settings.Width-core.SQUARE_SIZE),
+		float64(core.TOP_BAR_HEIGHT),
+		float64(core.SQUARE_SIZE),
 		float64(g.settings.Height),
 		g.settings.SnakeColor,
 	)
@@ -200,8 +198,8 @@ func (g *GameUi) drawSnake(screen *ebiten.Image, xOffset int, yOffset int) {
 			screen,
 			float64(sp.X+xOffset),
 			float64(sp.Y+yOffset),
-			float64(g.settings.SquareSize),
-			float64(g.settings.SquareSize),
+			float64(core.SQUARE_SIZE),
+			float64(core.SQUARE_SIZE),
 			g.settings.SnakeColor,
 		)
 	}
@@ -212,8 +210,8 @@ func (g *GameUi) drawFood(screen *ebiten.Image, xOffset int, yOffset int) {
 		screen,
 		float64(g.game.Food.X.X+xOffset),
 		float64(g.game.Food.X.Y+yOffset),
-		float64(g.settings.SquareSize),
-		float64(g.settings.SquareSize),
+		float64(core.SQUARE_SIZE),
+		float64(core.SQUARE_SIZE),
 		g.settings.FoodColor,
 	)
 }
