@@ -24,7 +24,7 @@ func NewGame(width int, height int, radius int) Game {
 	}
 }
 
-func (g *Game) Update(direction Direction) {
+func (g *Game) Update() {
 	snakePos := g.Snake.Head()
 
 	if snakePos.X == 0 || snakePos.X == g.Width || snakePos.Y == 0 || snakePos.Y == g.Height {
@@ -33,8 +33,6 @@ func (g *Game) Update(direction Direction) {
 	}
 
 	// TODO check self collision
-
-	g.Snake.SetDirection(direction)
 	g.Snake.Move()
 
 	snakeHead := g.Snake.Head()

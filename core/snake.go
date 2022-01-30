@@ -13,7 +13,6 @@ func NewSnake(x int, y int) Snake {
 }
 
 func (s *Snake) Grow() {
-	// TODO remove loop and draw squares far away
 	for i := 0; i < 5; i++ {
 		s.X = append(s.X, s.X[len(s.X)-1])
 	}
