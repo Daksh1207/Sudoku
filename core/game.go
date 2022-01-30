@@ -24,12 +24,11 @@ func NewGame(width int, height int, radius int) Game {
 	}
 }
 
-func (g *Game) Update() {
+func (g *Game) Update() bool {
 	snakePos := g.Snake.Head()
 
 	if snakePos.X == 0 || snakePos.X == g.Width || snakePos.Y == 0 || snakePos.Y == g.Height {
-		// TODO game over
-		return
+		return false
 	}
 
 	// TODO check self collision
@@ -47,4 +46,6 @@ func (g *Game) Update() {
 		g.Food = NewFoodAtRandom(g.Width, g.Height)
 		g.Points += 1
 	}
+
+	return true
 }

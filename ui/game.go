@@ -19,6 +19,7 @@ type GameUi struct {
 	lastPauseEvent time.Time
 	difficulty     int
 	tick           int
+	status         bool
 }
 
 func NewGame(settings core.Settings) GameUi {
@@ -30,17 +31,29 @@ func NewGame(settings core.Settings) GameUi {
 			settings.SquareSize,
 		),
 		keys:       []ebiten.Key{},
+		newKeys:    []ebiten.Key{},
 		paused:     false,
 		difficulty: 3,
 		tick:       0,
+		status:     true,
 	}
 }
 
 func (g *GameUi) pause() {
-	if time.Since(g.lastPauseEvent).Milliseconds() > 250 {
-		g.lastPauseEvent = time.Now()
-		g.paused = !g.paused
-	}
+	g.paused = !g.paused
+}
+
+func (g *GameUi) restart() {
+	g.game = core.NewGame(
+		g.settings.Width-g.settings.SquareSize*3,
+		g.settings.Height-g.settings.SquareSize*3-g.settings.TopBarHeight,
+		g.settings.SquareSize,
+	)
+	g.keys = g.keys[:0]
+	g.newKeys = g.newKeys[:0]
+	g.status = true
+	g.tick = 0
+	fmt.Println(g.game.Snake.GetDirection())
 }
 
 func (g *GameUi) readLastKey() ebiten.Key {
@@ -65,8 +78,19 @@ func (g *GameUi) readLastKey() ebiten.Key {
 	return keyPressed
 }
 
+func (g *GameUi) handleSpaceKey() {
+	if time.Since(g.lastPauseEvent).Milliseconds() > 250 {
+		g.lastPauseEvent = time.Now()
+		if !g.status {
+			g.restart()
+		} else {
+			g.pause()
+		}
+	}
+}
+
 func (g *GameUi) Update() error {
-	direction := g.game.Snake.GetDirection()
+	direction := core.Direction(core.DIRECTION_NONE)
 	keyPressed := g.readLastKey()
 
 	switch keyPressed {
@@ -87,12 +111,16 @@ func (g *GameUi) Update() error {
 	case ebiten.KeyS:
 		direction = core.DIRECTION_DOWN
 	case ebiten.KeySpace:
-		g.pause()
+		g.handleSpaceKey()
 	case ebiten.KeyEscape:
-		g.pause()
+		g.handleSpaceKey()
 	}
 
 	if g.paused {
+		return nil
+	}
+
+	if !g.status {
 		return nil
 	}
 
@@ -100,7 +128,7 @@ func (g *GameUi) Update() error {
 
 	if g.tick == g.difficulty {
 		g.tick = 0
-		g.game.Update()
+		g.status = g.game.Update()
 	}
 
 	g.tick += 1
@@ -118,6 +146,11 @@ func (g *GameUi) Draw(screen *ebiten.Image) {
 
 	if g.paused {
 		ebitenutil.DebugPrintAt(screen, "Game paused", 120, 5)
+	}
+
+	if !g.status {
+		ebitenutil.DebugPrintAt(screen, "Game over", (g.settings.Width/2)-25, g.settings.Height/2)
+		ebitenutil.DebugPrintAt(screen, "Press space to restart", (g.settings.Width/2)-60, (g.settings.Height/2)+20)
 	}
 
 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Points %d", g.game.Points), 10, 5)

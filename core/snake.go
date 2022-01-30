@@ -36,7 +36,7 @@ func (s *Snake) canChangeDirection(direction Direction) bool {
 }
 
 func (s *Snake) SetDirection(direction Direction) {
-	if s.canChangeDirection(direction) {
+	if direction != DIRECTION_NONE && s.canChangeDirection(direction) {
 		s.direction = direction
 	}
 }
